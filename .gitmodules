@@ -5,3 +5,6 @@
 	path = lib/kernel.git
 	url = https://github.com/zerodevapp/kernel.git
 	branch = main
+[submodule "lib/solady"]
+	path = lib/solady
+	url = https://github.com/Vectorized/solady
