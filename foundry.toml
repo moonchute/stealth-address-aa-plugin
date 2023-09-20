@@ -8,6 +8,8 @@ remappings = [
   "kernel/=lib/kernel/src/",
   "kernel-test/=lib/kernel/test/foundry/",
   "solady/=lib/solady/src/",
+  "biconomy/=lib/biconomy/contracts/smart-account/",
+  "@account-abstraction/=lib/kernel/lib/account-abstraction/"
 ]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
