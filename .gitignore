@@ -1,6 +1,9 @@
 # Compiler files
 cache/
 out/
+artifacts/
+cache_hardhat/
+typechain-types/
 
 # Ignores development broadcast logs
 !/broadcast
