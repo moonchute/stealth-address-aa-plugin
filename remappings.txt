@@ -1,9 +1,8 @@
-@openzeppelin/=lib/kernel.git/lib/openzeppelin-contracts/
-account-abstraction/=lib/kernel.git/lib/account-abstraction/contracts/
+kernel/=lib/kernel/src/
+kernel-test/=lib/kernel/test/foundry/
+solady/=lib/solady/src/
+@openzeppelin/=lib/kernel/lib/openzeppelin-contracts/
+account-abstraction/=lib/kernel/lib/account-abstraction/contracts/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
-kernel-test/=lib/kernel.git/test/foundry/
-kernel.git/=lib/kernel.git/
-kernel/=lib/kernel.git/src/
-openzeppelin-contracts/=lib/kernel.git/lib/openzeppelin-contracts/
-solady/=lib/solady/src/
+openzeppelin-contracts/=lib/kernel/lib/openzeppelin-contracts/
