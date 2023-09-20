@@ -2,6 +2,8 @@
 pragma solidity ^0.8.19;
 
 import "kernel/interfaces/IValidator.sol";
+import "solady/utils/ECDSA.sol";
+import {StealthAggreagteSignature} from "../StealthAggreagteSignature.sol";
 
 struct StealthAddressValidatorStorage {
     uint256 aggPubkey;
@@ -42,25 +44,36 @@ contract StealthAddressValidator is IKernelValidator {
         emit StealthAddressChanged(msg.sender, oldStealthAddress, stealthAddress);
     }
 
-    function validateUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 missingFunds)
+    function validateUserOp(UserOperation calldata _userOp, bytes32 _userOpHash, uint256)
         external
         payable
         override
         returns (ValidationData validationData)
     {
-        bytes1 memory mode = userOp.signature[0];
+        bytes1 mode = _userOp.signature[0];
+        StealthAddressValidatorStorage storage stealthData = stealthAddressValidatorStorage[_userOp.sender];
+
         // 0x00: signature from spending key
         // 0x01: aggregated signature from owner and shared secret
         if (mode == 0x00) {
-            address stealthAddress = stealthAddressValidatorStorage[_userOp.sender].stealthAddress;
+            address stealthAddress = stealthData.stealthAddress;
             bytes32 hash = ECDSA.toEthSignedMessageHash(_userOpHash);
-            if (owner == ECDSA.recover(hash, _userOp.signature)) {
+            if (stealthAddress == ECDSA.recover(hash, _userOp.signature[1:])) {
                 return ValidationData.wrap(0);
             }
-            if (owner != ECDSA.recover(_userOpHash, _userOp.signature)) {
+            if (stealthAddress != ECDSA.recover(_userOpHash, _userOp.signature[1:])) {
                 return SIG_VALIDATION_FAILED;
             }
-        } else if (mode == 0x01) {} else {
+        } else if (mode == 0x01) {
+            return StealthAggreagteSignature.validateAgg(
+                stealthData.aggPubkey,
+                stealthData.dhkey,
+                stealthData.aggPubkeyPrefix,
+                stealthData.dhkeyPrefix,
+                _userOpHash,
+                _userOp.signature[1:]
+            ) ? ValidationData.wrap(0) : SIG_VALIDATION_FAILED;
+        } else {
             return SIG_VALIDATION_FAILED;
         }
     }
@@ -71,24 +84,35 @@ contract StealthAddressValidator is IKernelValidator {
         override
         returns (ValidationData validationData)
     {
-        bytes1 memory mode = _signature[0];
+        bytes1 mode = _signature[0];
+        StealthAddressValidatorStorage storage stealthData = stealthAddressValidatorStorage[msg.sender];
+
         // 0x00: signature from spending key
         // 0x01: aggregated signature from owner and shared secret
         if (mode == 0x00) {
-            address stealthAddress = stealthAddressValidatorStorage[msg.sender].stealthAddress;
+            address stealthAddress = stealthData.stealthAddress;
             bytes32 hash = ECDSA.toEthSignedMessageHash(_hash);
-            if (owner == ECDSA.recover(hash, _signature)) {
+            if (stealthAddress == ECDSA.recover(hash, _signature[1:])) {
                 return ValidationData.wrap(0);
             }
-            if (owner != ECDSA.recover(_hash, _signature)) {
+            if (stealthAddress != ECDSA.recover(_hash, _signature[1:])) {
                 return SIG_VALIDATION_FAILED;
             }
-        } else if (mode == 0x01) {} else {
+        } else if (mode == 0x01) {
+            return StealthAggreagteSignature.validateAgg(
+                stealthData.aggPubkey,
+                stealthData.dhkey,
+                stealthData.aggPubkeyPrefix,
+                stealthData.dhkeyPrefix,
+                _hash,
+                _signature[1:]
+            ) ? ValidationData.wrap(0) : SIG_VALIDATION_FAILED;
+        } else {
             return SIG_VALIDATION_FAILED;
         }
     }
 
     function validCaller(address _caller, bytes calldata) external view override returns (bool) {
-        return stealthAddressValidatorStorage[caller].stealthAddress == _caller;
+        return stealthAddressValidatorStorage[_caller].stealthAddress == _caller;
     }
 }
