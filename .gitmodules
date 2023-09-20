@@ -8,3 +8,6 @@
 [submodule "lib/solady"]
 	path = lib/solady
 	url = https://github.com/Vectorized/solady
+[submodule "lib/biconomy"]
+	path = lib/biconomy
+	url = https://github.com/bcnmy/scw-contracts
