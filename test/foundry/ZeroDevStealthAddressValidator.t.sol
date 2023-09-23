@@ -47,16 +47,16 @@ contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUti
             abi.encodePacked(wStealthAddress, wStealthPub, wDhPub, uint8(wStealthPrefix), uint8(wDhPrefix))
         );
         (
-            uint256 expectedAggPb,
+            uint256 expectedStealthPb,
             uint256 expectedDhk,
             address expectedStealthAddress,
-            uint8 expectedAggPbPrefix,
+            uint8 expectedStealthPbPrefix,
             uint8 expectedDhPrefix
         ) = StealthAddressValidator(address(defaultValidator)).stealthAddressValidatorStorage(address(mockedKernel));
-        assertEq(expectedAggPb, wStealthPub);
+        assertEq(expectedStealthPb, wStealthPub);
         assertEq(expectedDhk, wDhPub);
         assertEq(expectedStealthAddress, wStealthAddress);
-        assertEq(expectedAggPbPrefix, wStealthPrefix);
+        assertEq(expectedStealthPbPrefix, wStealthPrefix);
         assertEq(expectedDhPrefix, wDhPrefix);
     }
 
@@ -77,16 +77,16 @@ contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUti
             )
         );
         (
-            uint256 expectedAggPb,
+            uint256 expectedStealthPb,
             uint256 expectedDhk,
             address expectedStealthAddress,
-            uint8 expectedAggPbPrefix,
+            uint8 expectedStealthPbPrefix,
             uint8 expectedDhPrefix
         ) = StealthAddressValidator(address(defaultValidator)).stealthAddressValidatorStorage(createdKernel);
-        assertEq(expectedAggPb, wStealthPub);
+        assertEq(expectedStealthPb, wStealthPub);
         assertEq(expectedDhk, wDhPub);
         assertEq(expectedStealthAddress, wStealthAddress);
-        assertEq(expectedAggPbPrefix, wStealthPrefix);
+        assertEq(expectedStealthPbPrefix, wStealthPrefix);
         assertEq(expectedDhPrefix, wDhPrefix);
     }
 

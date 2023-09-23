@@ -6,10 +6,10 @@ import "solady/utils/ECDSA.sol";
 import {StealthAggreagteSignature} from "../StealthAggreagteSignature.sol";
 
 struct StealthAddressValidatorStorage {
-    uint256 aggPubkey;
+    uint256 stealthPubkey;
     uint256 dhkey;
     address stealthAddress;
-    uint8 aggPubkeyPrefix;
+    uint8 stealthPubkeyPrefix;
     uint8 dhkeyPrefix;
 }
 
@@ -28,17 +28,17 @@ contract StealthAddressValidator is IKernelValidator {
 
     function enable(bytes calldata _data) external payable override {
         address stealthAddress = address(bytes20(_data[0:20]));
-        uint256 stealthAddressAggPubkey = uint256(bytes32(_data[20:52]));
+        uint256 stealthAddressPubkey = uint256(bytes32(_data[20:52]));
         uint256 stealthAddressDhkey = uint256(bytes32(_data[52:84]));
-        uint8 stealthAddressAggPubkeyPrefix = uint8(_data[84]);
+        uint8 stealthAddressPubkeyPrefix = uint8(_data[84]);
         uint8 stealthAddressDhkeyPrefix = uint8(_data[85]);
 
         address oldStealthAddress = stealthAddressValidatorStorage[msg.sender].stealthAddress;
         stealthAddressValidatorStorage[msg.sender] = StealthAddressValidatorStorage({
-            aggPubkey: stealthAddressAggPubkey,
+            stealthPubkey: stealthAddressPubkey,
             dhkey: stealthAddressDhkey,
             stealthAddress: stealthAddress,
-            aggPubkeyPrefix: stealthAddressAggPubkeyPrefix,
+            stealthPubkeyPrefix: stealthAddressPubkeyPrefix,
             dhkeyPrefix: stealthAddressDhkeyPrefix
         });
         emit StealthAddressChanged(msg.sender, oldStealthAddress, stealthAddress);
@@ -66,9 +66,9 @@ contract StealthAddressValidator is IKernelValidator {
             }
         } else if (mode == 0x01) {
             return StealthAggreagteSignature.validateAgg(
-                stealthData.aggPubkey,
+                stealthData.stealthPubkey,
                 stealthData.dhkey,
-                stealthData.aggPubkeyPrefix,
+                stealthData.stealthPubkeyPrefix,
                 stealthData.dhkeyPrefix,
                 _userOpHash,
                 _userOp.signature[1:]
@@ -100,9 +100,9 @@ contract StealthAddressValidator is IKernelValidator {
             }
         } else if (mode == 0x01) {
             return StealthAggreagteSignature.validateAgg(
-                stealthData.aggPubkey,
+                stealthData.stealthPubkey,
                 stealthData.dhkey,
-                stealthData.aggPubkeyPrefix,
+                stealthData.stealthPubkeyPrefix,
                 stealthData.dhkeyPrefix,
                 _hash,
                 _signature[1:]
