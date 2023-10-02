@@ -21,10 +21,13 @@ abstract contract StealthAddressUtil is Test {
             uint256 stealthPrefix,
             uint256 dhPrefix,
             address stealthAddress,
-            uint256 stealthPri
+            uint256 stealthPri,
+            uint256 ephemeralPub,
+            uint256 ephemeralPrefix
         )
     {
         VmSafe.Wallet memory ephemeralWallet = vm.createWallet(uint256(keccak256(bytes("ephemeral"))));
+        (ephemeralPub, ephemeralPrefix) = (ephemeralWallet.publicKeyX, ephemeralWallet.publicKeyY % 2 + 2);
 
         (uint256 sharedSecretX, uint256 sharedSecretY) =
             EllipticCurve.ecMul(ephemeralWallet.privateKey, ownerWallet.publicKeyX, ownerWallet.publicKeyY, AA, PP);
@@ -36,6 +39,15 @@ abstract contract StealthAddressUtil is Test {
 
         (uint256 dhkx, uint256 dhky) =
             EllipticCurve.ecMul(hashSecret, ownerWallet.publicKeyX, ownerWallet.publicKeyY, AA, PP);
-        return (stealthPubX, dhkx, stealthPubY % 2 + 2, dhky % 2 + 2, stealthAddress, hashSecret);
+        return (
+            stealthPubX,
+            dhkx,
+            stealthPubY % 2 + 2,
+            dhky % 2 + 2,
+            stealthAddress,
+            ephemeralPub,
+            ephemeralPrefix,
+            hashSecret
+        );
     }
 }
