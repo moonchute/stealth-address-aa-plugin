@@ -14,24 +14,45 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
 
     uint256 stealthPub = 0xfa59d070a31544e15b6aa78871a8ab992c156f7872afda11ef167d3a62aae579;
     uint256 dhPub = 0xf8bbfd03091689755e3ded692647c7e37dd286022656897203b15952b9e6413c;
+    uint256 ephemeralPub = 0xfa59d070a31544e15b6aa78871a8ab992c156f7872afda11ef167d3a62aae579;
+
     uint8 stealthPrefix = 0x02;
     uint8 dhPrefix = 0x03;
+    uint8 ephemeralPPrefix = 0x03;
+
     address stealthAddress = 0x31F945ac4E24cD1e34443777Fd62Bc70558C694D;
 
     function setUp() public {
         stealthModule = new StealthAddressRegistryModule();
         smartAccount = address(uint160(uint256(keccak256(bytes("smartAccount")))));
         vm.prank(smartAccount);
-        stealthModule.initForSmartAccount(stealthAddress, stealthPub, dhPub, stealthPrefix, dhPrefix);
+        stealthModule.initForSmartAccount(
+            stealthAddress, stealthPub, dhPub, ephemeralPub, stealthPrefix, dhPrefix, ephemeralPPrefix
+        );
     }
 
     function test_init_module() external {
         VmSafe.Wallet memory wallet = vm.createWallet(uint256(keccak256(bytes("1"))));
-        (uint256 wStealthPub, uint256 wDhPub, uint256 wStealthPrefix, uint256 wDhPrefix, address wStealthAddress,) =
-            getStealthAddress(wallet);
+        (
+            uint256 wStealthPub,
+            uint256 wDhPub,
+            uint256 wStealthPrefix,
+            uint256 wDhPrefix,
+            address wStealthAddress,
+            uint256 wEphemeralPub,
+            uint256 wEphemeralPrefix,
+        ) = getStealthAddress(wallet);
         address mockedSmartAccount = address(uint160(uint256(keccak256(bytes("mockedSmartAccount")))));
         vm.prank(mockedSmartAccount);
-        stealthModule.initForSmartAccount(wStealthAddress, wStealthPub, wDhPub, uint8(wStealthPrefix), uint8(wDhPrefix));
+        stealthModule.initForSmartAccount(
+            wStealthAddress,
+            wStealthPub,
+            wDhPub,
+            wEphemeralPub,
+            uint8(wStealthPrefix),
+            uint8(wDhPrefix),
+            uint8(wEphemeralPrefix)
+        );
         StealthStorage memory ss = stealthModule.getStealthAddress(mockedSmartAccount);
 
         uint256 expectedStealthb = ss.stealthPubkey;

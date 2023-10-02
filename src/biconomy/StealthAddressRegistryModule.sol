@@ -9,9 +9,11 @@ import {StealthAggreagteSignature} from "../StealthAggreagteSignature.sol";
 struct StealthStorage {
     uint256 stealthPubkey;
     uint256 dhkey;
+    uint256 ephemeralPubkey;
     address stealthAddress;
     uint8 stealthPubkeyPrefix;
     uint8 dhkeyPrefix;
+    uint8 ephemeralPrefix;
 }
 
 contract StealthAddressRegistryModule is BaseAuthorizationModule {
@@ -28,15 +30,18 @@ contract StealthAddressRegistryModule is BaseAuthorizationModule {
         address stealthAddress,
         uint256 stealthPubkey,
         uint256 dhkey,
+        uint256 ephemeralPubkey,
         uint8 stealthPubkeyPrefix,
-        uint8 dhkeyPrefix
+        uint8 dhkeyPrefix,
+        uint8 ephemeralPrefix
     ) external returns (address) {
         if (_smartAccountStealth[msg.sender].stealthAddress != address(0)) {
             revert AlreadyInitedForSmartAccount(msg.sender);
         }
         if (stealthAddress == address(0)) revert ZeroAddressNotAllowedAsStealthAddress();
-        _smartAccountStealth[msg.sender] =
-            StealthStorage(stealthPubkey, dhkey, stealthAddress, stealthPubkeyPrefix, dhkeyPrefix);
+        _smartAccountStealth[msg.sender] = StealthStorage(
+            stealthPubkey, dhkey, ephemeralPubkey, stealthAddress, stealthPubkeyPrefix, dhkeyPrefix, ephemeralPrefix
+        );
         return address(this);
     }
 
@@ -59,6 +64,8 @@ contract StealthAddressRegistryModule is BaseAuthorizationModule {
                 return SIG_VALIDATION_FAILED;
             }
         } else if (mode == 0x01) {
+            bytes32 hash = ECDSA.toEthSignedMessageHash(userOpHash);
+            if (_verifyAggregateSignature(hash, userOp.signature[1:], userOp.sender)) return 0;
             if (!_verifyAggregateSignature(userOpHash, userOp.signature[1:], userOp.sender)) {
                 return SIG_VALIDATION_FAILED;
             }
@@ -89,6 +96,10 @@ contract StealthAddressRegistryModule is BaseAuthorizationModule {
             }
             return bytes4(0xffffffff);
         } else if (mode == 0x01) {
+            bytes32 hash = ECDSA.toEthSignedMessageHash(dataHash);
+            if (_verifyAggregateSignature(hash, moduleSignature, msg.sender)) {
+                return EIP1271_MAGIC_VALUE;
+            }
             if (_verifyAggregateSignature(dataHash, moduleSignature, msg.sender)) {
                 return EIP1271_MAGIC_VALUE;
             }

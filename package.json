@@ -8,8 +8,11 @@
     "test": "test"
   },
   "scripts": {
+    "build": "forge build --skip test",
     "test:foundry": "forge test -vvv",
-    "test:hardhat": "hardhat test"
+    "test:hardhat": "hardhat test",
+    "deploy:anvil:zerodev": "forge script script/DeployStealthZeroDev.s.sol --broadcast -f anvil -vvv --skip test",
+    "deploy:anvil:biconomy": "forge script script/DeployStealthBiconomy.s.sol --broadcast -f anvil -vvv --skip test"
   },
   "keywords": [],
   "author": "",

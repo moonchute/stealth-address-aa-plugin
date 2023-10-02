@@ -9,7 +9,13 @@ remappings = [
   "kernel-test/=lib/kernel/test/foundry/",
   "solady/=lib/solady/src/",
   "biconomy/=lib/biconomy/contracts/smart-account/",
-  "@account-abstraction/=lib/kernel/lib/account-abstraction/"
+  "@account-abstraction/=lib/kernel/lib/account-abstraction/",
+  "src/common/=lib/kernel/src/common/"
 ]
+
+[rpc_endpoints]
+anvil = "${ANVIL_RPC_URL}"
+mumbai = "${MUMBAI_RPC_URL}"
+
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

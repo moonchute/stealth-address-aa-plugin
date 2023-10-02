@@ -8,9 +8,11 @@ import {StealthAggreagteSignature} from "../StealthAggreagteSignature.sol";
 struct StealthAddressValidatorStorage {
     uint256 stealthPubkey;
     uint256 dhkey;
+    uint256 ephemeralPubkey;
     address stealthAddress;
     uint8 stealthPubkeyPrefix;
     uint8 dhkeyPrefix;
+    uint8 ephemeralPrefix;
 }
 
 contract StealthAddressValidator is IKernelValidator {
@@ -32,14 +34,18 @@ contract StealthAddressValidator is IKernelValidator {
         uint256 stealthAddressDhkey = uint256(bytes32(_data[52:84]));
         uint8 stealthAddressPubkeyPrefix = uint8(_data[84]);
         uint8 stealthAddressDhkeyPrefix = uint8(_data[85]);
+        uint256 ephemeralPubkey = uint256(bytes32(_data[86:118]));
+        uint8 ephemeralPrefix = uint8(_data[118]);
 
         address oldStealthAddress = stealthAddressValidatorStorage[msg.sender].stealthAddress;
         stealthAddressValidatorStorage[msg.sender] = StealthAddressValidatorStorage({
             stealthPubkey: stealthAddressPubkey,
             dhkey: stealthAddressDhkey,
+            ephemeralPubkey: ephemeralPubkey,
             stealthAddress: stealthAddress,
             stealthPubkeyPrefix: stealthAddressPubkeyPrefix,
-            dhkeyPrefix: stealthAddressDhkeyPrefix
+            dhkeyPrefix: stealthAddressDhkeyPrefix,
+            ephemeralPrefix: ephemeralPrefix
         });
         emit StealthAddressChanged(msg.sender, oldStealthAddress, stealthAddress);
     }
@@ -52,12 +58,12 @@ contract StealthAddressValidator is IKernelValidator {
     {
         bytes1 mode = _userOp.signature[0];
         StealthAddressValidatorStorage storage stealthData = stealthAddressValidatorStorage[_userOp.sender];
+        bytes32 hash = ECDSA.toEthSignedMessageHash(_userOpHash);
 
         // 0x00: signature from spending key
         // 0x01: aggregated signature from owner and shared secret
         if (mode == 0x00) {
             address stealthAddress = stealthData.stealthAddress;
-            bytes32 hash = ECDSA.toEthSignedMessageHash(_userOpHash);
             if (stealthAddress == ECDSA.recover(hash, _userOp.signature[1:])) {
                 return ValidationData.wrap(0);
             }
@@ -65,6 +71,16 @@ contract StealthAddressValidator is IKernelValidator {
                 return SIG_VALIDATION_FAILED;
             }
         } else if (mode == 0x01) {
+            if (
+                StealthAggreagteSignature.validateAgg(
+                    stealthData.stealthPubkey,
+                    stealthData.dhkey,
+                    stealthData.stealthPubkeyPrefix,
+                    stealthData.dhkeyPrefix,
+                    hash,
+                    _userOp.signature[1:]
+                )
+            ) return ValidationData.wrap(0);
             return StealthAggreagteSignature.validateAgg(
                 stealthData.stealthPubkey,
                 stealthData.dhkey,
@@ -86,12 +102,12 @@ contract StealthAddressValidator is IKernelValidator {
     {
         bytes1 mode = _signature[0];
         StealthAddressValidatorStorage storage stealthData = stealthAddressValidatorStorage[msg.sender];
+        bytes32 hash = ECDSA.toEthSignedMessageHash(_hash);
 
         // 0x00: signature from spending key
         // 0x01: aggregated signature from owner and shared secret
         if (mode == 0x00) {
             address stealthAddress = stealthData.stealthAddress;
-            bytes32 hash = ECDSA.toEthSignedMessageHash(_hash);
             if (stealthAddress == ECDSA.recover(hash, _signature[1:])) {
                 return ValidationData.wrap(0);
             }
@@ -99,6 +115,16 @@ contract StealthAddressValidator is IKernelValidator {
                 return SIG_VALIDATION_FAILED;
             }
         } else if (mode == 0x01) {
+            if (
+                StealthAggreagteSignature.validateAgg(
+                    stealthData.stealthPubkey,
+                    stealthData.dhkey,
+                    stealthData.stealthPubkeyPrefix,
+                    stealthData.dhkeyPrefix,
+                    hash,
+                    _signature[1:]
+                )
+            ) return ValidationData.wrap(0);
             return StealthAggreagteSignature.validateAgg(
                 stealthData.stealthPubkey,
                 stealthData.dhkey,

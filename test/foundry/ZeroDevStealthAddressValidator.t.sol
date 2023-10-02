@@ -11,8 +11,11 @@ import {StealthAddressUtil} from "./utils/StealthAddressUtil.sol";
 contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUtil {
     uint256 stealthPub = 0xfa59d070a31544e15b6aa78871a8ab992c156f7872afda11ef167d3a62aae579;
     uint256 dhPub = 0xf8bbfd03091689755e3ded692647c7e37dd286022656897203b15952b9e6413c;
+    uint256 ephemeralPub = 0xfa59d070a31544e15b6aa78871a8ab992c156f7872afda11ef167d3a62aae579;
+
     uint8 stealthPrefix = 0x02;
     uint8 dhPrefix = 0x03;
+    uint8 ephemeralPrefix = 0x02;
     address stealthAddress = 0x31F945ac4E24cD1e34443777Fd62Bc70558C694D;
 
     function setUp() public {
@@ -26,7 +29,15 @@ contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUti
                         abi.encodeWithSelector(
                             KernelStorage.initialize.selector,
                             defaultValidator,
-                            abi.encodePacked(stealthAddress, stealthPub, dhPub, stealthPrefix, dhPrefix)
+                            abi.encodePacked(
+                                stealthAddress,
+                                stealthPub,
+                                dhPub,
+                                stealthPrefix,
+                                dhPrefix,
+                                ephemeralPub,
+                                ephemeralPrefix
+                            )
                         ),
                         0
                     )
@@ -37,33 +48,59 @@ contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUti
 
     function test_enable_validator() external {
         VmSafe.Wallet memory wallet = vm.createWallet(uint256(keccak256(bytes("1"))));
-        (uint256 wStealthPub, uint256 wDhPub, uint256 wStealthPrefix, uint256 wDhPrefix, address wStealthAddress,) =
-            getStealthAddress(wallet);
+        (
+            uint256 wStealthPub,
+            uint256 wDhPub,
+            uint256 wStealthPrefix,
+            uint256 wDhPrefix,
+            address wStealthAddress,
+            uint256 wEphemeralPub,
+            uint256 wEphemeralPrefix,
+        ) = getStealthAddress(wallet);
 
         address mockedKernel = address(uint160(uint256(keccak256(bytes("mockedKernel")))));
 
         vm.prank(mockedKernel);
         defaultValidator.enable(
-            abi.encodePacked(wStealthAddress, wStealthPub, wDhPub, uint8(wStealthPrefix), uint8(wDhPrefix))
+            abi.encodePacked(
+                wStealthAddress,
+                wStealthPub,
+                wDhPub,
+                uint8(wStealthPrefix),
+                uint8(wDhPrefix),
+                wEphemeralPub,
+                uint8(wEphemeralPrefix)
+            )
         );
         (
             uint256 expectedStealthPb,
             uint256 expectedDhk,
+            uint256 expectedEphemeralPub,
             address expectedStealthAddress,
             uint8 expectedStealthPbPrefix,
-            uint8 expectedDhPrefix
+            uint8 expectedDhPrefix,
+            uint8 expectedEphemeralPrefix
         ) = StealthAddressValidator(address(defaultValidator)).stealthAddressValidatorStorage(address(mockedKernel));
         assertEq(expectedStealthPb, wStealthPub);
         assertEq(expectedDhk, wDhPub);
         assertEq(expectedStealthAddress, wStealthAddress);
         assertEq(expectedStealthPbPrefix, wStealthPrefix);
         assertEq(expectedDhPrefix, wDhPrefix);
+        assertEq(expectedEphemeralPub, wEphemeralPub);
+        assertEq(expectedEphemeralPrefix, wEphemeralPrefix);
     }
 
     function test_create_kernel() external {
         VmSafe.Wallet memory wallet = vm.createWallet(uint256(keccak256(bytes("1"))));
-        (uint256 wStealthPub, uint256 wDhPub, uint256 wStealthPrefix, uint256 wDhPrefix, address wStealthAddress,) =
-            getStealthAddress(wallet);
+        (
+            uint256 wStealthPub,
+            uint256 wDhPub,
+            uint256 wStealthPrefix,
+            uint256 wDhPrefix,
+            address wStealthAddress,
+            uint256 wEphemeralPub,
+            uint256 wEphemeralPrefix,
+        ) = getStealthAddress(wallet);
 
         address createdKernel = address(
             factory.createAccount(
@@ -71,7 +108,15 @@ contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUti
                 abi.encodeWithSelector(
                     KernelStorage.initialize.selector,
                     defaultValidator,
-                    abi.encodePacked(wStealthAddress, wStealthPub, wDhPub, uint8(wStealthPrefix), uint8(wDhPrefix))
+                    abi.encodePacked(
+                        wStealthAddress,
+                        wStealthPub,
+                        wDhPub,
+                        uint8(wStealthPrefix),
+                        uint8(wDhPrefix),
+                        wEphemeralPub,
+                        uint8(wEphemeralPrefix)
+                    )
                 ),
                 0
             )
@@ -79,15 +124,19 @@ contract ZeroDevStealthAddressValidatorTest is KernelTestBase, StealthAddressUti
         (
             uint256 expectedStealthPb,
             uint256 expectedDhk,
+            uint256 expectedEphemeralPub,
             address expectedStealthAddress,
             uint8 expectedStealthPbPrefix,
-            uint8 expectedDhPrefix
+            uint8 expectedDhPrefix,
+            uint8 expectedEphemeralPrefix
         ) = StealthAddressValidator(address(defaultValidator)).stealthAddressValidatorStorage(createdKernel);
         assertEq(expectedStealthPb, wStealthPub);
         assertEq(expectedDhk, wDhPub);
         assertEq(expectedStealthAddress, wStealthAddress);
         assertEq(expectedStealthPbPrefix, wStealthPrefix);
         assertEq(expectedDhPrefix, wDhPrefix);
+        assertEq(expectedEphemeralPub, wEphemeralPub);
+        assertEq(expectedEphemeralPrefix, wEphemeralPrefix);
     }
 
     function test_stealth_validate_userop() external {
