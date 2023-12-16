@@ -73,6 +73,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
         bytes32 r = bytes32(0xa0407c76bd3ea4167ef3ec0006cb27e6ee453e306d7413b675289b645e4ba62b);
         bytes32 s = bytes32(0x858ac7986fdc7a1d5bb2720d700437967f5146868a5162bd2cc7e95f7ad2067d);
         bytes memory sig = abi.encodePacked(bytes1(0x00), r, s, v);
+        bytes memory sigAddress = abi.encode(sig, stealthModule);
 
         UserOperation memory userOp = UserOperation({
             sender: smartAccount,
@@ -85,7 +86,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
             maxFeePerGas: 1,
             maxPriorityFeePerGas: 1,
             paymasterAndData: bytes(""),
-            signature: sig
+            signature: sigAddress
         });
         vm.prank(smartAccount);
         uint256 validationData = stealthModule.validateUserOp(userOp, message);
@@ -97,6 +98,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
         bytes32 r = bytes32(0xe1e8bd51f720ede3e522d54d9837f2c39e0f38c742b19c19a519ce9e349f1faa);
         bytes32 s = bytes32(0x2327f9b2a155d03842ff832a4c846f749ed0815b0ff1b89f7bd7a06e6d431ced);
         bytes memory sig = abi.encodePacked(uint8(0x01), r, s);
+        bytes memory sigAddress = abi.encode(sig, stealthModule);
 
         UserOperation memory userOp = UserOperation({
             sender: smartAccount,
@@ -109,7 +111,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
             maxFeePerGas: 1,
             maxPriorityFeePerGas: 1,
             paymasterAndData: bytes(""),
-            signature: sig
+            signature: sigAddress
         });
         vm.prank(smartAccount);
         uint256 validationData = (stealthModule.validateUserOp(userOp, message));
@@ -168,6 +170,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
         bytes32 r = bytes32(0xa0407c76bd3ea4167ef3ec0006cb27e6ee453e306d7413b675289b645e4ba62b);
         bytes32 s = bytes32(0x858ac7986fdc7a1d5bb2720d700437967f5146868a5162bd2cc7e95f7ad2067d);
         bytes memory sig = abi.encodePacked(bytes1(0x00), r, s, v);
+        bytes memory sigAddress = abi.encode(sig, stealthModule);
 
         UserOperation memory userOp = UserOperation({
             sender: smartAccount,
@@ -180,7 +183,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
             maxFeePerGas: 1,
             maxPriorityFeePerGas: 1,
             paymasterAndData: bytes(""),
-            signature: sig
+            signature: sigAddress
         });
         vm.prank(smartAccount);
         uint256 validationData = stealthModule.validateUserOp(userOp, message);
@@ -192,6 +195,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
         bytes32 r = bytes32(0xe1e8bd51f720ede3e522d54d9837f2c39e0f38c742b19c19a519ce9e349f1faa);
         bytes32 s = bytes32(0x2327f9b2a155d03842ff832a4c846f749ed0815b0ff1b89f7bd7a06e6d431ced);
         bytes memory sig = abi.encodePacked(uint8(0x01), r, s);
+        bytes memory sigAddress = abi.encode(sig, stealthModule);
 
         UserOperation memory userOp = UserOperation({
             sender: smartAccount,
@@ -204,7 +208,7 @@ contract BiconomyStealthAddressRegistryModuleTest is Test, StealthAddressUtil {
             maxFeePerGas: 1,
             maxPriorityFeePerGas: 1,
             paymasterAndData: bytes(""),
-            signature: sig
+            signature: sigAddress
         });
         vm.prank(smartAccount);
         uint256 validationData = (stealthModule.validateUserOp(userOp, message));

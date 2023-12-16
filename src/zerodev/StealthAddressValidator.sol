@@ -72,7 +72,7 @@ contract StealthAddressValidator is IKernelValidator {
             }
         } else if (mode == 0x01) {
             if (
-                StealthAggreagteSignature.validateAgg(
+                StealthAggreagteSignature.validateAggregatedSignature(
                     stealthData.stealthPubkey,
                     stealthData.dhkey,
                     stealthData.stealthPubkeyPrefix,
@@ -81,7 +81,7 @@ contract StealthAddressValidator is IKernelValidator {
                     _userOp.signature[1:]
                 )
             ) return ValidationData.wrap(0);
-            return StealthAggreagteSignature.validateAgg(
+            return StealthAggreagteSignature.validateAggregatedSignature(
                 stealthData.stealthPubkey,
                 stealthData.dhkey,
                 stealthData.stealthPubkeyPrefix,
@@ -116,7 +116,7 @@ contract StealthAddressValidator is IKernelValidator {
             }
         } else if (mode == 0x01) {
             if (
-                StealthAggreagteSignature.validateAgg(
+                StealthAggreagteSignature.validateAggregatedSignature(
                     stealthData.stealthPubkey,
                     stealthData.dhkey,
                     stealthData.stealthPubkeyPrefix,
@@ -125,7 +125,7 @@ contract StealthAddressValidator is IKernelValidator {
                     _signature[1:]
                 )
             ) return ValidationData.wrap(0);
-            return StealthAggreagteSignature.validateAgg(
+            return StealthAggreagteSignature.validateAggregatedSignature(
                 stealthData.stealthPubkey,
                 stealthData.dhkey,
                 stealthData.stealthPubkeyPrefix,

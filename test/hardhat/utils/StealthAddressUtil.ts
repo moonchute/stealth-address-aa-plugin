@@ -18,6 +18,10 @@ export const getStealthAddress = (owner: Wallet) => {
       [sharedSecret.getX().toString(), sharedSecret.getY().toString()]
     )
   );
+  const stealthPrivate = EC.keyFromPrivate(hashSharedSecret)
+    .getPrivate()
+    .add(ephemeralPriv)
+    .mod(EC.g.curve.n);
 
   const sharedPub = EC.keyFromPrivate(hashSharedSecret).getPublic();
   const stealthPub = sharedPub.add(ownerPub);
@@ -30,6 +34,7 @@ export const getStealthAddress = (owner: Wallet) => {
   const dhkey = ownerPub.mul(EC.keyFromPrivate(hashSharedSecret).getPrivate());
 
   return {
+    stealthPrivate: "0x" + stealthPrivate.toString("hex"),
     stealthAddress,
     stealthPub: stealthPub.getX().toString(),
     dhkey: dhkey.getX().toString(),
@@ -39,7 +44,7 @@ export const getStealthAddress = (owner: Wallet) => {
   };
 };
 
-export const getAggregateSig = (
+export const getAggregateSig = async (
   owner: Wallet,
   sharedSecret: string,
   message: string

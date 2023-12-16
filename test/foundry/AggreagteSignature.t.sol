@@ -16,7 +16,7 @@ contract AggregateSignatureTest is Test {
         bytes32 s = 0x533fa93c2409ccd8cfaf2867967092d039ee0bfaab1d30e4cdb51d6a3d6214b6;
         bytes memory sig = abi.encodePacked(r, s);
 
-        bool verified = StealthAggreagteSignature.validateAgg(stealthPub, dhPub, stealthPrefix, dhPrefix, message, sig);
+        bool verified = StealthAggreagteSignature.validateAggregatedSignature(stealthPub, dhPub, stealthPrefix, dhPrefix, message, sig);
         assertTrue(verified);
     }
 }

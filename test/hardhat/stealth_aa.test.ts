@@ -42,7 +42,7 @@ describe("Stealth AA", function () {
 
       const sig = getAggregateSig(owner, hashSharedSecret, message);
 
-      const res = await stealthAggregate.validateAgg(
+      const res = await stealthAggregate.validateAggregatedSignature(
         stealthPub,
         dhkey,
         stealthPrefix,
