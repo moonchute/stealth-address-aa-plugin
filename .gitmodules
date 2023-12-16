@@ -11,3 +11,6 @@
 [submodule "lib/biconomy"]
 	path = lib/biconomy
 	url = https://github.com/bcnmy/scw-contracts
+[submodule "lib/account-abstraction"]
+	path = lib/account-abstraction
+	url = https://github.com/eth-infinitism/account-abstraction
