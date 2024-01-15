@@ -82,10 +82,7 @@ contract StealthAddressRegistryModule is BaseAuthorizationModule {
         virtual
         returns (uint256 validationData)
     {
-        (bytes memory cleanSignature, ) = abi.decode(
-            userOp.signature,
-            (bytes, address)
-        );
+        (bytes memory cleanSignature,) = abi.decode(userOp.signature, (bytes, address));
         bytes1 mode = cleanSignature[0];
         assembly {
             let len := mload(cleanSignature)
@@ -198,14 +195,13 @@ contract StealthAddressRegistryModule is BaseAuthorizationModule {
         );
         if (isValidSig) return true;
 
-        return
-            StealthAggreagteSignature.validateAggregatedSignature(
-                stealthData.stealthPubkey,
-                stealthData.dhkey,
-                stealthData.stealthPubkeyPrefix,
-                stealthData.dhkeyPrefix,
-                hash,
-                signature
-            );
+        return StealthAggreagteSignature.validateAggregatedSignature(
+            stealthData.stealthPubkey,
+            stealthData.dhkey,
+            stealthData.stealthPubkeyPrefix,
+            stealthData.dhkeyPrefix,
+            hash,
+            signature
+        );
     }
 }
