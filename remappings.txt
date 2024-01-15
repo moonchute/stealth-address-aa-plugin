@@ -1,9 +1,7 @@
 kernel/=lib/kernel/src/
-kernel-test/=lib/kernel/test/foundry/
 solady/=lib/solady/src/
 biconomy/=lib/biconomy/contracts/smart-account/
-@account-abstraction/=lib/kernel/lib/account-abstraction/
-src/common/=lib/kernel/src/common/
+@account-abstraction/=lib/account-abstraction/
 @openzeppelin/=lib/kernel/lib/openzeppelin-contracts/
 account-abstraction/=lib/kernel/lib/account-abstraction/contracts/
 ds-test/=lib/forge-std/lib/ds-test/src/

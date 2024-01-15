@@ -11,7 +11,7 @@ library StealthAggreagteSignature {
     uint256 public constant PP = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F;
     uint256 public constant N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141;
 
-    function validateAgg(
+    function validateAggregatedSignature(
         uint256 _pubkey,
         uint256 _dhkey,
         uint8 _pubkeyPrefix,
