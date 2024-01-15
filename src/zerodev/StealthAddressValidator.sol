@@ -5,6 +5,11 @@ import "kernel/interfaces/IValidator.sol";
 import "solady/utils/ECDSA.sol";
 import {StealthAggreagteSignature} from "../StealthAggreagteSignature.sol";
 
+/**
+ * @dev Storage structure for Stealth Address Registry Module.
+ * StealthPubkey, dhkey are used in aggregated signature.
+ * EphemeralPubkey is used to recover private key of stealth address.
+ */
 struct StealthAddressValidatorStorage {
     uint256 stealthPubkey;
     uint256 dhkey;
@@ -15,6 +20,11 @@ struct StealthAddressValidatorStorage {
     uint8 ephemeralPrefix;
 }
 
+/**
+ * @title Stealth Address Validator for ZeroDev Kernel.
+ * @dev Performs verifications for stealth address signed userOps.
+ * @author Justin Zen - <justin@moonchute.xyz>
+ */
 contract StealthAddressValidator is IKernelValidator {
     event StealthAddressChanged(
         address indexed kernel, address indexed oldStealthAddress, address indexed newStealthAddress
@@ -50,6 +60,12 @@ contract StealthAddressValidator is IKernelValidator {
         emit StealthAddressChanged(msg.sender, oldStealthAddress, stealthAddress);
     }
 
+    /**
+     * @dev Validates userOperation
+     * @param _userOp User Operation to be validated.
+     * @param _userOpHash Hash of the User Operation to be validated.
+     * @return validationData 0 if signature is valid, SIG_VALIDATION_FAILED otherwise.
+     */
     function validateUserOp(UserOperation calldata _userOp, bytes32 _userOpHash, uint256)
         external
         payable
@@ -94,6 +110,12 @@ contract StealthAddressValidator is IKernelValidator {
         }
     }
 
+    /**
+     * @dev Returns the the magic value of EIP-1271.
+     * @param _hash The hash of the data signed.
+     * @param _signature The signature of the data.
+     * @return validationData The validation data.
+     */
     function validateSignature(bytes32 _hash, bytes calldata _signature)
         external
         view
